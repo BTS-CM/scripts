@@ -29,5 +29,7 @@ hero.bitshares.wallet.unlock(getpass())
 pprint(hero.bitshares.publish_price_feed(
     "HERO",
     hero_bts,
+    mssr=110,
+    mcr=175,
     account="<YOUR FEED PRODUCER ACCOUNT NAME>"
 ))
