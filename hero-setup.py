@@ -3,25 +3,18 @@ from pprint import pprint
 from bitshares import BitShares
 from bitshares.asset import Asset
 
-
 bitshares = BitShares(
-    proposer="chainsquad",
+    proposer="customminer",
     proposal_expiration=60 * 60 * 24 * 3,
     # nobroadcast=True,
     bundle=True,
 )
+
 bitshares.wallet.unlock(getpass("Password: "))
-hero = Asset("HERO", bitshares_instance=bitshares)
+hertz = Asset("HERTZ", bitshares_instance=bitshares)
 
-"""
-hero.add_markets(
-    "whitelist",
-    ["BTS", "USD", "HERO"],
-    force_enable=True
-)
-"""
-
-hero.update_feed_producers([
+# This needs to be updated with appropriate private feed producers
+hertz.update_feed_producers([
     "blckchnd",
     "delegate.ihashfury",
     "rnglab",
@@ -32,8 +25,9 @@ hero.update_feed_producers([
     "wackou",
     "spartako",
     "sahkan-bitshares",
+    "sc-ol"
 ])
 
 pprint(
-    hero.bitshares.txbuffer.broadcast()
+    hertz.bitshares.txbuffer.broadcast()
 )
