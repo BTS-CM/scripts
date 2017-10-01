@@ -8,15 +8,15 @@ Likewise, only the HERTZ asset creator is able to update the asset using the pyt
 
 If you want to use the spreadsheet calculator you'll need a spreadsheet tool - I used Microsoft Excel 2016, there may be incompatibilities importing it to open source (or web based) spreadsheet tools.
 
-You need to install [pyhton-bitshares](https://github.com/xeroc/python-bitshares/):
+You need to install [pyhton-bitshares](https://github.com/xeroc/python-bitshares/)!
 
 ### Documentation
 
-Visit the [pybitshares website](http://docs.pybitshares.com/en/latest/) for in depth documentation on this Python library.
+Visit the [pybitshares website](http://docs.pybitshares.com/en/latest/) for in depth documentation on the python-bitshares library.
 
 ### Installation
 
-#### Install with pip:
+#### Install with pip3:
 ```
 $ sudo apt-get install libffi-dev libssl-dev python-dev python-dev3
 $ pip3 install bitshares
