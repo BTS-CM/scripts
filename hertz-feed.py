@@ -7,7 +7,9 @@ from datetime import date, datetime, timedelta
 import time
 import math
 
-reference_timestamp = 1444745544 # Bitshares 2.0 genesis UNIX timestamp
+genesis_timestamp = 1444745544 # Bitshares 2.0 genesis UNIX timestamp
+phase = 0 # Enabling offsetting the sin wave's phase. Use an UNIX timestamp value!
+reference_timestamp = genesis_timestamp + phase # Combining the genesis and phase timestamps
 period = 2629746 # 30.43 days converted to an UNIX timestamp
 reference_asset_value = 1.00 # $1.00 USD
 amplitude = 0.5 * reference_asset_value # 50% fluctuating the price feed $+-0.50
