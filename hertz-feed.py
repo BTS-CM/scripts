@@ -1,31 +1,30 @@
 from getpass import getpass
 from pprint import pprint
 from bitshares.asset import Asset
+from bitshares.block import Block
 from bitshares.price import Price
 from bitshares.market import Market
-from datetime import date, datetime, timedelta
-import time
+import pendulum
 import math
 
-genesis_timestamp = 1444745544 # Bitshares 2.0 genesis UNIX timestamp
-phase = 0 # Enabling offsetting the sin wave's phase. Use an UNIX timestamp value!
-reference_timestamp = genesis_timestamp + phase # Combining the genesis and phase timestamps
-period = 2629746 # 30.43 days converted to an UNIX timestamp
+amplitude = 0.5 # 50% fluctuating the price feed $+-0.50
+current_time = pendulum.now().timestamp() # Current timestamp for reference within the hertz script
+reference_timestamp = pendulum.parse(Block(1)['timestamp']).timestamp() # Retrieving the Bitshares2.0 genesis block timestamp
+period = pendulum.SECONDS_PER_DAY * 30.43 # 30.43 days converted to an UNIX timestamp
 reference_asset_value = 1.00 # $1.00 USD
-amplitude = 0.5 * reference_asset_value # 50% fluctuating the price feed $+-0.50
-current_time = time.time()
+waveform = math.sin(((((current_time - reference_timestamp)/period) % 1) * period) * ((2*math.pi)/period)) # Only change for an alternative HERTZ ABA.
 
 # Get HERTZ price in USD
-hertz_usd = reference_asset_value + (amplitude * math.sin(((((current_time - reference_timestamp)/period) % 1) * period) * ((2*math.pi)/period)))
+hertz_usd = reference_asset_value + ((amplitude * reference_asset_value) * waveform)
 
 market = Market("USD:BTS") # Set reference market to USD:BTS
 price = market.ticker()["quoteSettlement_price"] # Get Settlement price of USD
-price.invert() # Switching from USD/BTS to BTs/USD?
+price.invert() # Switching from quantity of BTS per USD to USD price of one BTS.
 hertz = Price(hertz_usd, "USD/HERTZ") # Limit the hertz_usd decimal places & convert from float.
 
 hertz_bts = hertz / price # Calculate HERTZ price in BTS
 
-# Some printed outputs 
+# Some printed outputs
 print("Price of HERTZ in USD: {}".format(hertz))
 print("Price of USD in BTS: {}".format(price))
 print("Price of HERTZ in BTS: {}".format(hertz_bts))
