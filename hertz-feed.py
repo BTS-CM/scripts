@@ -18,7 +18,7 @@ bitshares_api_node = BitShares(
     #"wss://openledger.hk/ws"
     )
 
-set_shared_bitshares_instance(bitshares_api_node)
+set_shared_bitshares_instance(bitshares_api_node) # Set the API node 
 
 reference_timestamp = pendulum.parse(Block(1)['timestamp']).timestamp() # Retrieving the Bitshares2.0 genesis block timestamp
 period = pendulum.SECONDS_PER_DAY * 30.43 # 30.43 days converted to an UNIX timestamp
@@ -39,7 +39,7 @@ hertz_bts = hertz / price # Calculate HERTZ price in BTS
 
 # Some printed outputs
 print("Price of HERTZ in USD: {}".format(hertz))
-print("Price of USD in BTS: {}".format(price))
+print("Price of BTS in USD: {}".format(price))
 print("Price of HERTZ in BTS: {}".format(hertz_bts))
 
 # Unlock the Bitshares wallet
