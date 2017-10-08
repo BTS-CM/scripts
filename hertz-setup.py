@@ -2,10 +2,11 @@ from getpass import getpass
 from pprint import pprint
 from bitshares import BitShares
 from bitshares.asset import Asset
+import pendulum
 
 bitshares = BitShares(
     proposer="bitshares-username",
-    proposal_expiration=60 * 60 * 24 * 3,
+    proposal_expiration=pendulum.SECONDS_PER_DAY, # One day max validity
     # nobroadcast=True,
     bundle=True,
 )
