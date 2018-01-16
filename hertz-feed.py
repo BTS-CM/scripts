@@ -33,7 +33,13 @@ bitshares_api_node = BitShares(
 
 set_shared_bitshares_instance(bitshares_api_node) # Set the API node TODO: Enable polling multiple nodes & taking avg!
 
-#hertz_reference_timestamp = pendulum.parse(Block(1)['timestamp']).timestamp() # Retrieving the Bitshares2.0 genesis block timestamp via the Bitshares library
+# Getting the value of USD in BTS
+market = Market("USD:BTS") # Set reference market to USD:BTS
+price = market.ticker()["quoteSettlement_price"] # Get Settlement price of USD
+price.invert() # Switching from quantity of BTS per USD to USD price of one BTS.
+
+#Hertz variables:
+#Change only for alternative Algorithm Based Assets."""
 hertz_reference_timestamp = "2015-10-13T14:12:24+00:00" # Bitshares 2.0 genesis block timestamp
 hertz_current_timestamp = pendulum.now().timestamp() # Current timestamp for reference within the hertz script
 hertz_amplitude = 0.14 # 14% fluctuating the price feed $+-0.14 (2% per day)
@@ -41,24 +47,21 @@ hertz_period_days = 28 # Aka wavelength, time for one full SIN wave cycle.
 hertz_phase_days = 0.908056 # Time offset from genesis till the first wednesday, to set wednesday as the primary Hz day.
 hertz_reference_asset_value = 1.00 # $1.00 USD, not much point changing as the ratio will be the same.
 
+# Calculate the current value of Hertz in USD
 hertz_value = get_hertz_feed(hertz_reference_timestamp, hertz_current_timestamp, hertz_period_days, hertz_phase_days, hertz_reference_asset_value, hertz_amplitude)
-
-print("Hertz Value: {}".format(hertz_value))
-
-market = Market("USD:BTS") # Set reference market to USD:BTS
-price = market.ticker()["quoteSettlement_price"] # Get Settlement price of USD
 hertz = Price(hertz_value, "USD/HERTZ") # Limit the hertz_usd decimal places & convert from float.
 
-# Unlock the Bitshares wallet
-# Perform check prior to calculating HERTZ value, to prevent delay in providing password from publishing an inaccurate (late) Hz price feed.
-hertz.bitshares.wallet.unlock(getpass())
-
-hertz_bts = hertz / price # Calculate HERTZ price in BTS (THIS IS WHAT YOU PUBLISH!)
+# Calculate HERTZ price in BTS (THIS IS WHAT YOU PUBLISH!)
+hertz_bts = price.as_base("BTS") * hertz.as_quote("HERTZ")
 
 # Some printed outputs
 print("Price of HERTZ in USD: {}".format(hertz))
-print("Price of USD in BTS: {}".format(price))
+print("Price of USD in BTS: {}".format(price.invert()))
+print("Price of BTS in USD: {}".format(price)
 print("Price of HERTZ in BTS: {}".format(hertz_bts))
+
+# Unlock the Bitshares wallet
+hertz.bitshares.wallet.unlock(getpass())
 
 """
 Publish the price feed to the BTS DEX
