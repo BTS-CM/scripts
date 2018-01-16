@@ -33,10 +33,6 @@ bitshares_api_node = BitShares(
 
 set_shared_bitshares_instance(bitshares_api_node) # Set the API node TODO: Enable polling multiple nodes & taking avg!
 
-# Unlock the Bitshares wallet
-# Perform check prior to calculating HERTZ value, to prevent delay in providing password from publishing an inaccurate (late) Hz price feed.
-hertz.bitshares.wallet.unlock(getpass())
-
 #hertz_reference_timestamp = pendulum.parse(Block(1)['timestamp']).timestamp() # Retrieving the Bitshares2.0 genesis block timestamp via the Bitshares library
 hertz_reference_timestamp = "2015-10-13T14:12:24+00:00" # Bitshares 2.0 genesis block timestamp
 hertz_current_timestamp = pendulum.now().timestamp() # Current timestamp for reference within the hertz script
@@ -52,6 +48,11 @@ print("Hertz Value: {}".format(hertz_value))
 market = Market("USD:BTS") # Set reference market to USD:BTS
 price = market.ticker()["quoteSettlement_price"] # Get Settlement price of USD
 hertz = Price(hertz_value, "USD/HERTZ") # Limit the hertz_usd decimal places & convert from float.
+
+# Unlock the Bitshares wallet
+# Perform check prior to calculating HERTZ value, to prevent delay in providing password from publishing an inaccurate (late) Hz price feed.
+hertz.bitshares.wallet.unlock(getpass())
+
 hertz_bts = hertz / price # Calculate HERTZ price in BTS (THIS IS WHAT YOU PUBLISH!)
 
 # Some printed outputs
