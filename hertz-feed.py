@@ -31,7 +31,8 @@ bitshares_api_node = BitShares(
     #"wss://openledger.hk/ws"
     )
 
-set_shared_bitshares_instance(bitshares_api_node) # Set the API node TODO: Enable polling multiple nodes & taking avg!
+# Set the API node above as the shared Bitshares instance for the rest of the script
+set_shared_bitshares_instance(bitshares_api_node)
 
 # Getting the value of USD in BTS
 market = Market("USD:BTS") # Set reference market to USD:BTS
@@ -39,7 +40,7 @@ price = market.ticker()["quoteSettlement_price"] # Get Settlement price of USD
 price.invert() # Switching from quantity of BTS per USD to USD price of one BTS.
 
 #Hertz variables:
-#Change only for alternative Algorithm Based Assets."""
+#Change only for alternative Algorithm Based Assets.
 hertz_reference_timestamp = "2015-10-13T14:12:24+00:00" # Bitshares 2.0 genesis block timestamp
 hertz_current_timestamp = pendulum.now().timestamp() # Current timestamp for reference within the hertz script
 hertz_amplitude = 0.14 # 14% fluctuating the price feed $+-0.14 (2% per day)
@@ -56,9 +57,9 @@ hertz_bts = price.as_base("BTS") * hertz.as_quote("HERTZ")
 
 # Some printed outputs
 print("Price of HERTZ in USD: {}".format(hertz))
-print("Price of USD in BTS: {}".format(price.invert()))
-print("Price of BTS in USD: {}".format(price)
 print("Price of HERTZ in BTS: {}".format(hertz_bts))
+print("Price of BTS in USD: {}".format(price))
+print("Price of USD in BTS: {}".format(price.invert()))
 
 # Unlock the Bitshares wallet
 hertz.bitshares.wallet.unlock(getpass())
