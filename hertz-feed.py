@@ -55,6 +55,9 @@ hertz = Price(hertz_value, "USD/HERTZ") # Limit the hertz_usd decimal places & c
 # Calculate HERTZ price in BTS (THIS IS WHAT YOU PUBLISH!)
 hertz_bts = price.as_base("BTS") * hertz.as_quote("HERTZ")
 
+hertz_core_exchange_rate = 0.80 # 20% offset, CER > Settlement!
+hertz_cer = hertz_bts * hertz_core_exchange_rate
+
 # Some printed outputs
 print("Price of HERTZ in USD: {}".format(hertz))
 print("Price of HERTZ in BTS: {}".format(hertz_bts))
@@ -72,7 +75,7 @@ Don't change any of the other values.
 pprint(hertz.bitshares.publish_price_feed(
     "HERTZ",
     hertz_bts,
-    cer=125,
+    cer=hertz_cer, # Setting in line with Wackou's price feed scripts
     mssr=110,
     mcr=200,
     account="<YOUR FEED PRODUCER ACCOUNT NAME>"
