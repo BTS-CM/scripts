@@ -72,6 +72,7 @@ Don't change any of the other values.
 pprint(hertz.bitshares.publish_price_feed(
     "HERTZ",
     hertz_bts,
+    cer=125,
     mssr=110,
     mcr=200,
     account="<YOUR FEED PRODUCER ACCOUNT NAME>"
