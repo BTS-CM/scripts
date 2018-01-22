@@ -116,5 +116,5 @@ if __name__ == "__main__":
 		cer=hertz_cer, # Setting in line with Wackou's price feed scripts
 		mssr=110,
 		mcr=200,
-		account="hertz-feed"
+		account="REPLACE_WITH_YOUR_USERNAME"
 	))
