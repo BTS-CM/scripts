@@ -16,20 +16,23 @@ Visit the [pybitshares website](http://docs.pybitshares.com/en/latest/) for in d
 
 ### Installation
 
-#### Install with pip3:
 ```
-$ sudo apt-get install libffi-dev libssl-dev python-dev python-dev3
-$ pip3 install bitshares
+pip3 install --upgrade pip
+pip3 install --upgrade setuptools
+pip3 install --upgrade wheel
+pip3 install requests
+pip3 install lomond
+pip3 install wsaccel
+pip3 install hug
+pip3 install gunicorn
+git clone https://github.com/xeroc/python-bitshares.git -b develop
+pip3 install -e python-bitshares/
+mv hertz_feed.service /etc/systemd/system/hertz_feed.service
+mv hertz_feed.timer /etc/systemd/system/hertz_feed.timer
+sudo systemctl enable hertz_feed.service
+sudo systemctl enable hertz_feed.timer
+sudo systemctl start hertz_feed.timer
+sudo systemctl daemon-reload
 ```
 
-#### Manual installation:
-```
-$ git clone https://github.com/xeroc/python-bitshares/
-$ cd python-bitshares
-$ python3 setup.py install --user
-```
-
-#### Upgrade
-```
-$ pip3 install --user --upgrade
-```
+Only implement the systemd service if you've set a static password.

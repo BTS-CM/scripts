@@ -1,0 +1,9 @@
+[Unit]
+Description=30 second timer for the hertz_feed service
+
+[Timer]
+OnUnitActiveSec=30s
+OnBootSec=30s
+
+[Install]
+WantedBy=timers.target

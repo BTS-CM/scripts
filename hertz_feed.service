@@ -1,0 +1,10 @@
+[Unit]
+Description=Hertz price feed script service
+
+[Service]
+PIDFile=/home/btsapi/hertz_pricefeed/pid
+User=btsapi
+Group=www-data
+WorkingDirectory=/home/btsapi/hertz_pricefeed/
+Environment="PATH=/home/btsapi/HUG/bin/"
+ExecStart=python3 /home/btsapi/hertz_pricefeed/feed.py
