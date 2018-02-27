@@ -56,12 +56,13 @@ git clone https://github.com/BTS-CM/scripts.git hertz_pricefeed
 cd hertz_pricefeed/
 ```
 
-##### Within the `hertz_pricefeed` folder, you need to configure:
+If you've never used python-bitshares before and haven't created a local wallet then configure the `create_wallet.py` file, providing a `LOCAL_WALLET_PASSWORD` (doesn't need to be your Bitshares password) and the `PRICE_FEED_PUBLISHER_ACTIVE_KEY` (Extracted from the wallet), then run the 'create_wallet.py' script via `python3 create_wallet.py` once.
 
-* The `create_wallet.py` file, providing a `LOCAL_WALLET_PASSWORD` (doesn't need to be your Bitshares password) and the `PRICE_FEED_PUBLISHER_ACTIVE_KEY` (Extracted from the wallet).
-* The `hertz-feed.py` file, specifically the 'LOCAL_WALLET_PASSWORD' (line 86 - created in the previous step) and 'account_name' (line 99 - your Bitshares account name).
+If you already have created a local python-bitshares wallet, proceed to the next step.
 
-Once configured, run the 'create_wallet.py' script via `python3 create_wallet.py` only once, then try `python3 hertz-feed.py` to publish a Hertz price feed. If you want to test the script without publishing a price feed then comment out lines 86-101 of `hertz-feed.py`.
+The `hertz-feed.py` file requires minor configuration, specifically the 'LOCAL_WALLET_PASSWORD' (line 86 - created in the previous step) and 'account_name' (line 99 - your Bitshares account name). Once configured, run the command `python3 hertz-feed.py` to publish a Hertz price feed.
+
+If you want to test the script without publishing a price feed then comment out lines 86-101 of `hertz-feed.py`.
 
 #### Install the Systemd service & timer
 
