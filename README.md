@@ -56,9 +56,8 @@ git clone https://github.com/BTS-CM/scripts.git hertz_pricefeed
 cd hertz_pricefeed/
 ```
 
+##### Within the `hertz_pricefeed` folder, you need to configure:
 
-
-Within the `hertz_pricefeed` folder, you need to configure:
 * The `create_wallet.py` file, providing a `LOCAL_WALLET_PASSWORD` (doesn't need to be your Bitshares password) and the `PRICE_FEED_PUBLISHER_ACTIVE_KEY` (Extracted from the wallet).
 * The `hertz-feed.py` file, specifically the 'LOCAL_WALLET_PASSWORD' (line 86 - created in the previous step) and 'account_name' (line 99 - your Bitshares account name).
 

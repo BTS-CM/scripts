@@ -2,8 +2,9 @@
 Description=30 second timer for the hertz_feed service
 
 [Timer]
-OnUnitActiveSec=30s
-OnBootSec=30s
+Unit=hertz_feed.service
+OnUnitActiveSec=60s
+OnBootSec=60s
 
 [Install]
-WantedBy=timers.target
+WantedBy=default.target
