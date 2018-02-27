@@ -2,14 +2,11 @@ from getpass import getpass
 from pprint import pprint
 from bitshares.asset import Asset
 from bitshares import BitShares
-#from bitshares.block import Block #Uncomment if using blocknumber as reference timestamp.
 from bitshares.instance import set_shared_bitshares_instance
 from bitshares.price import Price
 from bitshares.market import Market
 import pendulum
 import math
-import lomond
-import wsaccel
 
 def get_hertz_feed(reference_timestamp, current_timestamp, period_days, phase_days, reference_asset_value, amplitude):
 	"""
@@ -27,46 +24,26 @@ def get_hertz_feed(reference_timestamp, current_timestamp, period_days, phase_da
 if __name__ == "__main__":
 
 	full_node_list = [
-						"wss://bitshares.crypto.fans/ws", #location: "Munich, Germany"
-						"wss://bit.btsabc.org/ws", #location: "Hong Kong"
-						"wss://bitshares.apasia.tech/ws", #location: "Bangkok, Thailand"
-						"wss://japan.bitshares.apasia.tech/ws", #location: "Tokyo, Japan"
-						"wss://api.bts.blckchnd.com" #location: "Falkenstein, Germany"
-						"wss://openledger.hk/ws", #location: "Hong Kong"
-						"wss://bitshares.dacplay.org/ws", #location:  "Hangzhou, China"
-						"wss://bitshares-api.wancloud.io/ws", #location:  "China"
-						"wss://ws.gdex.top", #location: "China"
-						"wss://dex.rnglab.org", #location: "Netherlands"
-						"wss://dexnode.net/ws", #location: "Dallas, USA"
-						"wss://kc-us-dex.xeldal.com/ws", #location: "Kansas City, USA"
-						"wss://la.dexnode.net/ws", #location: "Los Angeles, USA"
-						"wss://btsza.co.za:8091/ws", #location: "Cape Town, South Africa"
-					 ]
+	"wss://eu.nodes.bitshares.works", #location: "Central Europe - BitShares Infrastructure Program"
+	"wss://us.nodes.bitshares.works", #location: "U.S. West Coast - BitShares Infrastructure Program"
+	"wss://sg.nodes.bitshares.works", #location: "Singapore - BitShares Infrastructure Program"
+	"wss://bitshares.crypto.fans/ws", #location: "Munich, Germany"
+	"wss://bit.btsabc.org/ws", #location: "Hong Kong"
+	"wss://bitshares.apasia.tech/ws", #location: "Bangkok, Thailand"
+	"wss://japan.bitshares.apasia.tech/ws", #location: "Tokyo, Japan"
+	"wss://api.bts.blckchnd.com" #location: "Falkenstein, Germany"
+	"wss://openledger.hk/ws", #location: "Hong Kong"
+	"wss://bitshares.dacplay.org/ws", #location:  "Hangzhou, China"
+	"wss://bitshares-api.wancloud.io/ws", #location:  "China"
+	"wss://ws.gdex.top", #location: "China"
+	"wss://dex.rnglab.org", #location: "Netherlands"
+	"wss://dexnode.net/ws", #location: "Dallas, USA"
+	"wss://kc-us-dex.xeldal.com/ws", #location: "Kansas City, USA"
+	"wss://la.dexnode.net/ws", #location: "Los Angeles, USA"
+	"wss://btsza.co.za:8091/ws" #location: "Cape Town, South Africa"
+	]
 
-	online_server = ""
-
-	for server in full_node_list:
-		if (online_server == ""):
-			try:
-				lomond_ws = lomond.websocket.WebSocket(server)
-				for event in lomond_ws.connect():
-					#print(event.name)
-					if event.name == "connect_fail":
-						print(server + " is offline!")
-						break
-					if event.name == "connecting":
-						continue
-					if event.name == "connected":
-						continue
-					if event.name == "ready" or event.name == "poll":
-						online_server = server
-						print(server + " is online!")
-						lomond_ws.close()
-						break
-			except:
-				print(server + " is offline!")
-
-	bitshares_api_node = BitShares(online_server, nobroadcast=False)
+	bitshares_api_node = BitShares(full_node_list, nobroadcast=False)
 
 	# Set the API node above as the shared Bitshares instance for the rest of the script
 	set_shared_bitshares_instance(bitshares_api_node)
@@ -89,8 +66,12 @@ if __name__ == "__main__":
 	hertz_value = get_hertz_feed(hertz_reference_timestamp, hertz_current_timestamp, hertz_period_days, hertz_phase_days, hertz_reference_asset_value, hertz_amplitude)
 	hertz = Price(hertz_value, "USD/HERTZ") # Limit the hertz_usd decimal places & convert from float.
 
+	print(hertz)
+
 	# Calculate HERTZ price in BTS (THIS IS WHAT YOU PUBLISH!)
 	hertz_bts = price.as_base("BTS") * hertz.as_quote("HERTZ")
+	print("Hz-Quote: {}".format(hertz.as_quote("HERTZ")))
+	print("base: {}".format(price.as_base("BTS")))
 
 	hertz_core_exchange_rate = 0.80 # 20% offset, CER > Settlement!
 	hertz_cer = hertz_bts * hertz_core_exchange_rate
@@ -102,8 +83,7 @@ if __name__ == "__main__":
 	print("Price of USD in BTS: {}".format(price.invert()))
 
 	# Unlock the Bitshares wallet
-	# Alternatively replace 'getpass()' with your wallet password string
-	hertz.bitshares.wallet.unlock(getpass())
+	hertz.bitshares.wallet.unlock("LOCAL_WALLET_PASSWORD")
 
 	"""
 	Publish the price feed to the BTS DEX

@@ -7,6 +7,8 @@ from bitshares.price import Price
 from bitshares.market import Market
 import pendulum
 import math
+import lomond
+import wsaccel
 
 def get_hertz_feed(reference_timestamp, current_timestamp, period_days, phase_days, reference_asset_value, amplitude):
     """
@@ -31,7 +33,7 @@ def phase_verification(date_from, date_to):
     for date in date_list.range('days'):
         hertz_test_timestamp = date.timestamp()
         hertz_value_list = get_hertz_feed(hertz_reference_timestamp, hertz_test_timestamp, hertz_period_days, hertz_phase_days, hertz_reference_asset_value, hertz_amplitude)
-        print(date.to_date_string(), date.format('%A'), hertz_value_list)
+        print(date.to_date_string(), date.format('%A'), "{0:.2f}".format(hertz_value_list))
 
 bitshares_api_node = BitShares(
     # If the connected API node is down, uncomment one of the
@@ -56,4 +58,4 @@ hertz_reference_asset_value = 1.00 # $1.00 USD, not much point changing as the r
 
 # Verify phase
 # Given that this uses global vars, must run at earliest here.
-print(phase_verification("2017-01-01","2018-01-31"))
+print(phase_verification("2018-01-01","2019-01-31"))
