@@ -5,5 +5,5 @@ Description=Hertz price feed script service
 PIDFile=/home/username/hertz_pricefeed/pid
 User=username
 WorkingDirectory=/home/username/hertz_pricefeed/
-Environment="PATH=/home/username/HUG/bin/"
-ExecStart=python3 /home/username/hertz_pricefeed/feed.py
+Environment="PATH=/home/username/Hertz/bin/"
+ExecStart=python3 /home/username/hertz_pricefeed/hertz-feed.py
