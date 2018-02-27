@@ -66,18 +66,21 @@ If you want to test the script without publishing a price feed then comment out 
 
 #### Install the Systemd service & timer
 
-In order to regularly publish Hertz price feeds, copy the hertz_feed service and timer to the appropriate systemd linux folder & launch the service.
+Once you've successfully tested the Hertz price feed script you should consider configuring a SystemD service and timer in order to regularly publish Hertz price feeds. The first step is alter the contents of the service file to provide the `username` you're running the script under. The second optional step is to configure the timer file by changing the trigger frequency; the current default is set to 60 seconds.
 
-Alter the contents of the timer file to change the frequency of publishing price feeds, the current default is set to 1 minute. After any changes run the command `sudo systemctl daemon-reload`.
-
-You'll also need to change the `username` field in the `hertz_feed.service` file to the username you plan to run the script under.
+Once you've configured the service (and optionally the timer) files, copy the hertz_feed service and timer to the appropriate systemd linux folder using the following commands:
 
 ```
-mv hertz_feed.service /etc/systemd/system/hertz_feed.service
-mv hertz_feed.timer /etc/systemd/system/hertz_feed.timer
+cp hertz_feed.service /etc/systemd/system/hertz_feed.service
+cp hertz_feed.timer /etc/systemd/system/hertz_feed.timer
+```
+
+Once you've copied the files to the appropriate folder, run the following commands:
+
+```
+sudo systemctl daemon-reload
 sudo systemctl enable hertz_feed.service
 sudo systemctl enable hertz_feed.timer
-sudo systemctl daemon-reload
 sudo systemctl start hertz_feed.timer
 sudo systemctl start hertz_feed.service
 ```
