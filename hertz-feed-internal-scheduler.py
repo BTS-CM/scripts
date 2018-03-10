@@ -1,12 +1,14 @@
-from getpass import getpass
-from pprint import pprint
+from apscheduler.schedulers.blocking import BlockingScheduler
 from bitshares.asset import Asset
 from bitshares import BitShares
 from bitshares.instance import set_shared_bitshares_instance
 from bitshares.price import Price
 from bitshares.market import Market
-import pendulum
+from getpass import getpass
+from pprint import pprint
 import math
+import os
+import pendulum
 
 def get_hertz_feed(reference_timestamp, current_timestamp, period_days, phase_days, reference_asset_value, amplitude):
 	"""
@@ -18,32 +20,11 @@ def get_hertz_feed(reference_timestamp, current_timestamp, period_days, phase_da
 	hz_period = pendulum.SECONDS_PER_DAY * period_days
 	hz_phase = pendulum.SECONDS_PER_DAY * phase_days
 	hz_waveform = math.sin(((((current_timestamp - (hz_reference_timestamp + hz_phase))/hz_period) % 1) * hz_period) * ((2*math.pi)/hz_period)) # Only change for an alternative HERTZ ABA.
-	print(hz_waveform)
 	hz_value = reference_asset_value + ((amplitude * reference_asset_value) * hz_waveform)
 	return hz_value
 
-if __name__ == "__main__":
-
-	full_node_list = [
-		"wss://eu.nodes.bitshares.works", #location: "Central Europe - BitShares Infrastructure Program"
-		"wss://us.nodes.bitshares.works", #location: "U.S. West Coast - BitShares Infrastructure Program"
-		"wss://sg.nodes.bitshares.works", #location: "Singapore - BitShares Infrastructure Program"
-		"wss://bitshares.crypto.fans/ws", #location: "Munich, Germany"
-		"wss://bit.btsabc.org/ws", #location: "Hong Kong"
-		"wss://api.bts.blckchnd.com" #location: "Falkenstein, Germany"
-		"wss://openledger.hk/ws", #location: "Hong Kong"
-		"wss://bitshares-api.wancloud.io/ws", #location:  "China"
-		"wss://dex.rnglab.org", #location: "Netherlands"
-		"wss://dexnode.net/ws", #location: "Dallas, USA"
-		"wss://kc-us-dex.xeldal.com/ws", #location: "Kansas City, USA"
-		"wss://la.dexnode.net/ws", #location: "Los Angeles, USA"
-	]
-
-	bitshares_api_node = BitShares(full_node_list, nobroadcast=False)
-
-	# Set the API node above as the shared Bitshares instance for the rest of the script
-	set_shared_bitshares_instance(bitshares_api_node)
-
+def run_hertz_function():
+	time_before = pendulum.now()
 	# Getting the value of USD in BTS
 	market = Market("USD:BTS") # Set reference market to USD:BTS
 	price = market.ticker()["quoteSettlement_price"] # Get Settlement price of USD
@@ -62,12 +43,10 @@ if __name__ == "__main__":
 	hertz_value = get_hertz_feed(hertz_reference_timestamp, hertz_current_timestamp, hertz_period_days, hertz_phase_days, hertz_reference_asset_value, hertz_amplitude)
 	hertz = Price(hertz_value, "USD/HERTZ") # Limit the hertz_usd decimal places & convert from float.
 
-	print(hertz)
-
 	# Calculate HERTZ price in BTS (THIS IS WHAT YOU PUBLISH!)
 	hertz_bts = price.as_base("BTS") * hertz.as_quote("HERTZ")
-	print("Hz-Quote: {}".format(hertz.as_quote("HERTZ")))
-	print("base: {}".format(price.as_base("BTS")))
+	#print("Hz-Quote: {}".format(hertz.as_quote("HERTZ")))
+	#print("base: {}".format(price.as_base("BTS")))
 
 	hertz_core_exchange_rate = 0.80 # 20% offset, CER > Settlement!
 	hertz_cer = hertz_bts * hertz_core_exchange_rate
@@ -94,3 +73,42 @@ if __name__ == "__main__":
 		mcr=200,
 		account="REPLACE_WITH_YOUR_USERNAME"
 	))
+
+	time_after = pendulum.now()
+	time_difference = time_after.diff(time_before).in_seconds()
+	print("Time (seconds) taken: {}".format(time_difference))
+	print(".-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.")
+
+
+if __name__ == "__main__":
+
+	full_node_list = [
+	"wss://eu.nodes.bitshares.works", #location: "Central Europe - BitShares Infrastructure Program"
+	"wss://us.nodes.bitshares.works", #location: "U.S. West Coast - BitShares Infrastructure Program"
+	"wss://sg.nodes.bitshares.works", #location: "Singapore - BitShares Infrastructure Program"
+	"wss://bitshares.crypto.fans/ws", #location: "Munich, Germany"
+	"wss://bit.btsabc.org/ws", #location: "Hong Kong"
+	"wss://bitshares.apasia.tech/ws", #location: "Bangkok, Thailand"
+	"wss://japan.bitshares.apasia.tech/ws", #location: "Tokyo, Japan"
+	"wss://api.bts.blckchnd.com" #location: "Falkenstein, Germany"
+	"wss://openledger.hk/ws", #location: "Hong Kong"
+	"wss://bitshares.dacplay.org/ws", #location:  "Hangzhou, China"
+	"wss://bitshares-api.wancloud.io/ws", #location:  "China"
+	"wss://ws.gdex.top", #location: "China"
+	"wss://dexnode.net/ws", #location: "Dallas, USA"
+	"wss://kc-us-dex.xeldal.com/ws", #location: "Kansas City, USA"
+	"wss://la.dexnode.net/ws", #location: "Los Angeles, USA"
+	]
+
+	bitshares_api_node = BitShares(full_node_list, nobroadcast=False)
+
+	# Set the API node above as the shared Bitshares instance for the rest of the script
+	set_shared_bitshares_instance(bitshares_api_node)
+
+	scheduler = BlockingScheduler()
+	scheduler.add_job(run_hertz_function, 'interval', seconds=60)
+
+	try:
+		scheduler.start()
+	except (SystemExit):
+		pass

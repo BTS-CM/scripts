@@ -4,6 +4,9 @@ Description=Hertz price feed script service
 [Service]
 PIDFile=/home/username/hertz_pricefeed/pid
 User=username
+Group=www-data
 WorkingDirectory=/home/username/hertz_pricefeed/
-Environment="PATH=/home/username/Hertz/bin/"
-ExecStart=python3 /home/username/hertz_pricefeed/hertz-feed.py
+Environment="PATH=/home/username/HUG/bin/"
+ExecStart=/home/username/HUG/bin/python3 /home/username/hertz_pricefeed/hertz-feed-internal-scheduler.py
+Restart=on-failure
+RestartSec=15

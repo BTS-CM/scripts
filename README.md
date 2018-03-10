@@ -43,6 +43,7 @@ pip3 install --upgrade wheel
 pip3 install requests
 pip3 install pendulum
 pip3 install bitshares
+pip3 install apscheduler
 ```
 
 If any of the above commands fail, pip3 will inform you of any missing dependencies you need to install. Please post an issue to this repo for improving docs if this occurs, thanks.
@@ -60,19 +61,24 @@ If you've never used python-bitshares before and haven't created a local wallet 
 
 If you already have created a local python-bitshares wallet, proceed to the next step.
 
-The `hertz-feed.py` file requires minor configuration, specifically the 'LOCAL_WALLET_PASSWORD' (line 86 - created in the previous step) and 'account_name' (line 99 - your Bitshares account name). Once configured, run the command `python3 hertz-feed.py` to publish a Hertz price feed.
+There are two price feed scripts to pick from:
 
-If you want to test the script without publishing a price feed then comment out lines 86-101 of `hertz-feed.py`.
+* `hertz-feed-internal-scheduler.py` : Uses an internal scheduler (`apscheduler`) - recommended!
+* `hertz-feed.py` : No internal scheduler, requires configuring some method of repeatedly triggering (systemd timer).
 
-#### Install the Systemd service & timer
+The price feed script file requires minor configuration:
+Change 'LOCAL_WALLET_PASSWORD' (locally created python-bitshares password, not your real witness account password) and 'account_name' (price feed publisher account name).
 
-Once you've successfully tested the Hertz price feed script you should consider configuring a SystemD service and timer in order to regularly publish Hertz price feeds. The first step is alter the contents of the service file to provide the `username` you're running the script under. The second optional step is to configure the timer file by changing the trigger frequency; the current default is set to 60 seconds.
+Once configured, depending on what script you chose to use, run either the command `python3 hertz-feed.py` to publish a single Hertz price feed, or `python3 hertz-feed-internal-scheduler.py` to test publishing many price feeds.
 
-Once you've configured the service (and optionally the timer) files, copy the hertz_feed service and timer to the appropriate systemd linux folder using the following commands:
+#### Install the Systemd service
+
+Once you've successfully tested the Hertz price feed script you should consider configuring a SystemD service and timer in order to regularly publish Hertz price feeds. The first step is alter the contents of the service file to provide the `username` you're running the script under.
+
+Once you've configured the service file, copy the hertz_feed service to the appropriate systemd linux folder using the following command:
 
 ```
 cp hertz_feed.service /etc/systemd/system/hertz_feed.service
-cp hertz_feed.timer /etc/systemd/system/hertz_feed.timer
 ```
 
 Once you've copied the files to the appropriate folder, run the following commands:
@@ -80,7 +86,5 @@ Once you've copied the files to the appropriate folder, run the following comman
 ```
 sudo systemctl daemon-reload
 sudo systemctl enable hertz_feed.service
-sudo systemctl enable hertz_feed.timer
-sudo systemctl start hertz_feed.timer
 sudo systemctl start hertz_feed.service
 ```
