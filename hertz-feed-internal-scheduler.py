@@ -9,6 +9,7 @@ from pprint import pprint
 import math
 import os
 import pendulum
+from pycoingecko import CoinGeckoAPI
 
 def get_hertz_feed(reference_timestamp, current_timestamp, period_days, phase_days, reference_asset_value, amplitude):
 	"""
@@ -38,24 +39,24 @@ def run_hertz_function():
 	hertz_period_days = 28 # Aka wavelength, time for one full SIN wave cycle.
 	hertz_phase_days = 0.908056 # Time offset from genesis till the first wednesday, to set wednesday as the primary Hz day.
 	hertz_reference_asset_value = 1.00 # $1.00 USD, not much point changing as the ratio will be the same.
-
+	hertz_core_exchange_rate = 0.80
+	
 	# Calculate the current value of Hertz in USD
 	hertz_value = get_hertz_feed(hertz_reference_timestamp, hertz_current_timestamp, hertz_period_days, hertz_phase_days, hertz_reference_asset_value, hertz_amplitude)
 	hertz = Price(hertz_value, "USD/HERTZ") # Limit the hertz_usd decimal places & convert from float.
 
-	# Calculate HERTZ price in BTS (THIS IS WHAT YOU PUBLISH!)
-	hertz_bts = price.as_base("BTS") * hertz.as_quote("HERTZ")
-	#print("Hz-Quote: {}".format(hertz.as_quote("HERTZ")))
-	#print("base: {}".format(price.as_base("BTS")))
+        cg = CoinGeckoAPI() # Initialise coingecko
+        bts_usd_coingecko = cg.get_price(ids='bitshares', vs_currencies='usd') # Price of BTS in USD from coingecko
+        bts_usd_coingecko_value = Price(bts_usd_coingecko["bitshares"]["usd"], "USD/BTS") # Price format
 
-	hertz_core_exchange_rate = 0.80 # 20% offset, CER > Settlement!
-	hertz_cer = hertz_bts * hertz_core_exchange_rate
+        hertz_bts = bts_usd_coingecko_value.invert() * hertz.as_quote("HERTZ") # Feed price
+        hertz_cer = hertz_bts * hertz_core_exchange_rate
 
-	# Some printed outputs
-	print("Price of HERTZ in USD: {}".format(hertz))
-	print("Price of HERTZ in BTS: {}".format(hertz_bts))
-	print("Price of BTS in USD: {}".format(price))
-	print("Price of USD in BTS: {}".format(price.invert()))
+        # Some printed outputs
+        #print("Price of HERTZ in USD: {}".format(hertz))
+        #print("Price of HERTZ in BTS: {}".format(hertz_bts))
+        #print("Price of BTS in USD: {}".format(bts_usd_coingecko_value))
+        #print("Price of USD in BTS: {}".format(bts_usd_coingecko_value.invert()))
 
 	# Unlock the Bitshares wallet
 	hertz.bitshares.wallet.unlock("LOCAL_WALLET_PASSWORD")
@@ -74,10 +75,10 @@ def run_hertz_function():
 		account="REPLACE_WITH_YOUR_USERNAME"
 	))
 
-	time_after = pendulum.now()
-	time_difference = time_after.diff(time_before).in_seconds()
-	print("Time (seconds) taken: {}".format(time_difference))
-	print(".-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.")
+	#time_after = pendulum.now()
+	#time_difference = time_after.diff(time_before).in_seconds()
+	#print("Time (seconds) taken: {}".format(time_difference))
+	#print(".-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.")
 
 
 if __name__ == "__main__":
@@ -87,14 +88,9 @@ if __name__ == "__main__":
 	"wss://us.nodes.bitshares.works", #location: "U.S. West Coast - BitShares Infrastructure Program"
 	"wss://sg.nodes.bitshares.works", #location: "Singapore - BitShares Infrastructure Program"
 	"wss://bitshares.crypto.fans/ws", #location: "Munich, Germany"
-	"wss://bit.btsabc.org/ws", #location: "Hong Kong"
 	"wss://bitshares.apasia.tech/ws", #location: "Bangkok, Thailand"
 	"wss://japan.bitshares.apasia.tech/ws", #location: "Tokyo, Japan"
 	"wss://api.bts.blckchnd.com" #location: "Falkenstein, Germany"
-	"wss://openledger.hk/ws", #location: "Hong Kong"
-	"wss://bitshares.dacplay.org/ws", #location:  "Hangzhou, China"
-	"wss://bitshares-api.wancloud.io/ws", #location:  "China"
-	"wss://ws.gdex.top", #location: "China"
 	"wss://dexnode.net/ws", #location: "Dallas, USA"
 	"wss://kc-us-dex.xeldal.com/ws", #location: "Kansas City, USA"
 	"wss://la.dexnode.net/ws", #location: "Los Angeles, USA"
